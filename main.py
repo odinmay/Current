@@ -15,7 +15,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 # Instantiate the bot object and set options variables
-bot = commands.Bot(command_prefix='.')
+intents = discord.Intents().all()
+bot = commands.Bot(command_prefix='.', intents=intents)
 YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True', 'limitrate:': '4.2M'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 

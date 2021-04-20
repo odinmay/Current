@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord import Spotify
 import discord
 import random
 import requests
