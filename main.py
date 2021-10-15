@@ -5,6 +5,7 @@ import youtube_dl
 import random
 import logging
 import emoji
+import os
 
 # Setting up logger
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ intents = discord.Intents().all()
 bot = commands.Bot(command_prefix='.', intents=intents)
 YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True', 'limitrate:': '4.2M'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+DISCORD_SECRET = os.getenv("DISCORD_SECRET")
 
 # Cog extensions list
 extensions = ['cogs.administrator',
@@ -59,4 +61,4 @@ async def on_member_remove(member):
 
 if __name__ == '__main__':
     load_extensions(extensions)
-    bot.run('SECRET_KEY')
+    bot.run(DISCORD_SECRET)
