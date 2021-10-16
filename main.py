@@ -1,10 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.utils import get
-import youtube_dl
-import random
 import logging
-import emoji
 import os
 
 # Setting up logger
