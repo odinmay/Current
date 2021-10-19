@@ -1,20 +1,34 @@
 from asyncio import sleep
 from discord.ext import commands
-import data_compile
 import discord
 import datetime
 import random
 import emoji
-from bank import Bank
+
 
 emoji_list = [':one:', ':two:', ':three:', ':four:', ':five:', ':six:', ':seven:', ':eight:', ':nine:']
 question_list = ['I cant believe you like _____ too, we should hang out.']
 
 
+def data_compile():
+    import json
+    import os
+
+    master_list = []
+    path = os.getcwd()
+    with open(path + '/cah-cards-full.json', encoding='utf-8') as f:
+        data = json.load(f)
+        for outer_dict in data:
+            counter = 0
+            for dict in data[str(counter)]['black']:
+                master_list.append(dict.get('text'))
+    return master_list
+
 class OdinsGame(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game = Game()
+        self.master_list = data_compile()
 
     @commands.command()
     async def game_join(self, ctx):
@@ -31,7 +45,7 @@ class OdinsGame(commands.Cog):
     async def game_start(self, ctx):
         # set min players
         if len(self.game.players) > 0:
-            self.game.question = random.choice(data_compile.master_list)
+            self.game.question = random.choice(self.master_list)
 
             for player in self.game.players:
                 channel = await self.game.players[player].member.create_dm()

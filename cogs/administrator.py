@@ -1,5 +1,8 @@
+import random
+import time
 from discord.ext import commands
 from datetime import datetime
+import json
 import discord
 import asyncio
 import math
@@ -9,20 +12,14 @@ class Administration(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(description='Prints the bots ping in ms')
+    @commands.command()
     async def ping(self, ctx):
-        await ctx.send(f'Odinbots current ping is {round(self.bot.latency * 1000)}ms')
-
-    @commands.command(name='clear')
-    async def clear(self, ctx, amount=0):
-        if ctx.author.guild_permissions.manage_messages:
-            await ctx.channel.purge(limit=amount)
-        else:
-            await ctx.channel.purge(limit=1)
-            await ctx.send(f'{ctx.author} does not have permission to delete messages.')
+        """Prints the bots ping in ms"""
+        await ctx.send(f'Currents current ping is {round(self.bot.latency * 1000)}ms')
 
     @commands.command()
     async def kick(self, ctx, member: discord.Member, *, reason=None):
+        """Kicks target member"""
         if ctx.author.guild_permissions.kick_members:
             await member.kick(reason=reason)
             ctx.send(f'{ctx.author} has kicked {member}')
@@ -31,6 +28,7 @@ class Administration(commands.Cog):
 
     @commands.command()
     async def ban(self, ctx, member: discord.Member, *, reason=None):
+        """Bans target member"""
         if ctx.author.guild_permissions.ban_members:
             await member.ban(reason=reason)
             await ctx.send(f'{member.mention} has been banned.')
@@ -39,6 +37,7 @@ class Administration(commands.Cog):
 
     @commands.command()
     async def unban(self, ctx, *, member):
+        """Unbans target member"""
         if ctx.author.guild_permissions.ban_members:
             banned_users = await ctx.guild.bans()
             member_name, member_discriminator = member.split('#')
@@ -53,9 +52,7 @@ class Administration(commands.Cog):
 
     @commands.command()
     async def list_channels(self, ctx):
-        """
-        Pulls all of the guild channels and displays them in an Embed message
-        """
+        """Pulls all of the guild channels and displays them in an Embed message"""
         # Create Embed object and set attrs
         embedMsg = discord.Embed(title=f"{ctx.guild} Channels", description="Channels", color=0x00C7FF)
 
@@ -71,26 +68,23 @@ class Administration(commands.Cog):
 
     @commands.command()
     async def emojis(self, ctx):
-        """
-        Print the total emojis available to the Guild
-        """
+        """Print the total emojis available to the Guild"""
         await ctx.send(f'{ctx.guild} has {len(ctx.guild.emojis)} emojis available!')
 
     @commands.command()
     async def server_birthday(self, ctx):
-        """
-        Prints the date the Guild was created at
-        """
-        await ctx.send(f'{ctx.guild}\'s Birthday is : {ctx.guild.created_at}')
+        """Prints the date the Guild was created at"""
+        await ctx.send(f'{ctx.guild}\'s Birthday is : {ctx.guild.created_at.strftime("%B %d, %Y : %I %M %p")}')
 
     @commands.command()
     async def backup_messages(self, ctx):
+        """Creates a backup of all of the messages on the server"""
         all_messages = []
         for channel in ctx.guild.text_channels:
             print(f'Working on Channel: {channel}')
             messages = await channel.history(limit=150000).flatten()
             for message in messages:
-                all_messages.append(f'Channel: {channel} - {message.author} : {message.content} | {message.created_at}')
+                all_messages.append(f'Channel: {channel} - {message.author} : {message.content} | {message.created_at.strftime("%B %d, %Y : %I %M %p")}')
         print('Opening File')
 
         with open(f'Message_backup_{datetime.today().strftime("%Y-%m-%d")}.txt', 'w') as file:
@@ -100,6 +94,7 @@ class Administration(commands.Cog):
     #Credit to Diggy. https://stackoverflow.com/questions/61786264/discord-py-send-long-messages
     @commands.command()
     async def members(self, ctx):
+        """Prints all of the members on the server"""
         members = [str(m) for m in ctx.guild.members]
         per_page = 10  # 10 members per page
         pages = math.ceil(len(members) / per_page)
@@ -151,9 +146,7 @@ class Administration(commands.Cog):
 
     @commands.command()
     async def member_count(self, ctx):
-        """
-        Prints the # of members
-        """
+        """Prints the # of members"""
         await ctx.send(f'There are {ctx.guild.member_count} members currently in {ctx.guild}')
 
 def setup(bot):

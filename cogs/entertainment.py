@@ -115,7 +115,7 @@ magicians_images = ['https://thumbs.gfycat.com/PalatableBeautifulInganue.webp',
                     'https://gfycat.com/bigrepulsiveacornweevil-the-magicians-summer-bishil-margo-hanson-urgent']
 
 
-# Helper Functions #
+# helper Functions #
 
 def translate_sindarin(text):
     url = 'https://api.funtranslations.com/translate/sindarin.json'
@@ -192,17 +192,28 @@ def pull_movie(movie):
         'x-rapidapi-key': "006adefbccmshf086e0b885be71bp1c8a29jsnbf24cc6763f4"
     }
     response = requests.request("GET", url, headers=headers).json()
-    print(response)
-    return '\n'.join(
-        [response['poster'], response['plot'], 'Rating ' + response['rating'], response['trailer']['link']])
+
+    embedMsg = discord.Embed(title=f"{str(movie).title()} | {response['rating']}/10",
+                             description=f"{response['plot']}",
+                             url=response['trailer']['link'],
+                             color=0x00C7FF
+                             )
+    embedMsg.set_image(url=response['poster'])
+
+
+    return embedMsg
+    # return '\n'.join(
+    #     [response['poster'], , 'Rating ' + response['rating'], response['trailer']['link']])
 
 
 class Entertainment(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.strikes = 0
 
-    @commands.command(name='8ball', description='Ask a question!')
+    @commands.command(name='8ball')
     async def _8ball(self, ctx, *, question):
+        """Ask it a question!"""
         responses = ["It is certain.",
                      "It is decidedly so.",
                      "Without a doubt.",
@@ -225,54 +236,63 @@ class Entertainment(commands.Cog):
                      "Very doubtful."]
         await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
 
-    @commands.command(aliases=['coin'], description='Whats the most you ever lost in a coin toss?')
+    @commands.command(aliases=['coin'])
     async def flip(self, ctx):
+        """Whats the most you ever lost in a coin toss?"""
         await ctx.send(random.choice(['Heads', 'Tails']))
 
-    @commands.command(description='Tells a joke')
+    @commands.command()
     async def joke(self, ctx, user: discord.Member = None):
+        """Tells a joke"""
         user = user or ctx.author
         await ctx.send(pull_joke())
 
-    @commands.command(aliases=['chuck norris', 'chucknorris', 'norris'], description='Tells a Chuck Noris FACT.')
+    @commands.command(aliases=['chuck norris', 'chucknorris', 'norris'])
     async def chuck(self, ctx, user: discord.Member = None):
+        """Tells a Chuck Noris FACT."""
         user = user or ctx.author
         await ctx.send(pull_chucknorris())
 
-    @commands.command(aliases=['magic', 'magician'], description='Displays random Magicians gif')
+    @commands.command(aliases=['magic', 'magician'])
     async def magicians(self, ctx):
+        """Displays random Magicians gif"""
         await ctx.send(random.choice(magicians_images))
 
-    @commands.command(description='Fetches Magic The Gathering card data from magicthegathering.io')
+    @commands.command()
     async def mtg(self, ctx, *, card):
+        """Magic The Gathering card data from magicthegathering.io/scryfall"""
         async with ctx.message.channel.typing():
             await ctx.send(pull_mtgio_card(card))
             await ctx.send(scryfall_price(card))
 
-    @commands.command(description='Fetches Magic The Gathering card data from magicthegathering.io')
+    @commands.command()
     async def mtg_art(self, ctx, *, card):
+        """Magic The Gathering card art from magicthegathering.io/scryfall"""
         async with ctx.message.channel.typing():
             await ctx.send(scryfall_art(card))
 
-    @commands.command(
-        description='Scrapes movie data for the supplied movie and gives trailer poster and description of movie.')
+    @commands.command()
     async def movie(self, ctx, *, movie):
+        """Displays a movies plot/rating/trailer"""
         await ctx.send(pull_movie(movie))
 
-    @commands.command(description='Translates message into Elvish(Sindarin)')
+    @commands.command()
     async def sindarin(self, ctx, *, text):
+        """Translates message into Elvish(Sindarin)"""
         await ctx.send(translate_sindarin(text))
 
-    @commands.command(description='Displays what you\'re listening to.')
+    @commands.command()
     async def spotify(self, ctx, user: discord.Member = None):
+        """Shares what you are listening to on Spotify"""
         user = user or ctx.author
         for activity in user.activities:
             if isinstance(activity, Spotify):
                 await ctx.send(
                     f"{user} is listening to {activity.title} by {activity.artist} {activity.album_cover_url}")
 
-    @commands.command(aliases=['defelcts'], description='Displays a random deflect gif')
+    @commands.command(aliases=['defelcts'])
     async def deflect(self, ctx) -> str:
+        """Displays a random deflect gif"""
         await ctx.send(random.choice(
             ['https://media2.giphy.com/media/l1KVaixq8xLxoHEti/giphy.gif',
              'https://media4.giphy.com/media/3ohjUQ81edgmV8Gu40/giphy.gif',
