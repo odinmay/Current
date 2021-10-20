@@ -16,3 +16,4 @@ typing-extensions==3.7.4.3
 urllib3==1.25.10
 yarl==1.5.1
 youtube-dl==2021.2.22
+mysql-connector-python~=8.0.27

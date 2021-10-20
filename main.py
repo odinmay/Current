@@ -23,7 +23,8 @@ extensions = ['cogs.administrator',
               'cogs.entertainment',
               'cogs.voicebot',
               'cogs.odinsgame',
-              'cogs.bank']
+              'cogs.bank',
+              'cogs.games',]
 
 
 def load_extensions(ext_list: list):
@@ -40,7 +41,7 @@ def load_extensions(ext_list: list):
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name='www.github.com/odinmay'))
+    await bot.change_presence(activity=discord.Game(name='github.com/odinmay'))
     logger.info('Bot is online and ready')
 
 

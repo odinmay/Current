@@ -1,10 +1,8 @@
 from asyncio import sleep
 from discord.ext import commands
 import discord
-import datetime
+from .bank import Bank
 import random
-import emoji
-
 
 emoji_list = [':one:', ':two:', ':three:', ':four:', ':five:', ':six:', ':seven:', ':eight:', ':nine:']
 question_list = ['I cant believe you like _____ too, we should hang out.']
@@ -23,6 +21,7 @@ def data_compile():
             for dict in data[str(counter)]['black']:
                 master_list.append(dict.get('text'))
     return master_list
+
 
 class OdinsGame(commands.Cog):
     def __init__(self, bot):

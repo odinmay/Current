@@ -3,7 +3,6 @@ from discord import Spotify
 import discord
 import random
 import requests
-import logging
 import json
 
 magicians_images = ['https://thumbs.gfycat.com/PalatableBeautifulInganue.webp',
@@ -274,7 +273,7 @@ class Entertainment(commands.Cog):
     @commands.command()
     async def movie(self, ctx, *, movie):
         """Displays a movies plot/rating/trailer"""
-        await ctx.send(pull_movie(movie))
+        await ctx.send(embed=pull_movie(movie))
 
     @commands.command()
     async def sindarin(self, ctx, *, text):

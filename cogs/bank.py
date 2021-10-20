@@ -1,7 +1,11 @@
-from discord.ext import commands
-import discord
 import os
-import json
+from discord.ext import commands
+from mysql.connector import connect, Error
+
+host = os.getenv()
+user = os.getenv()
+password = os.getenv()
+database = os.getenv()
 
 
 class Bank(commands.Cog):
@@ -9,79 +13,131 @@ class Bank(commands.Cog):
         self.bot = bot
 
     @staticmethod
-    def reset_all_accounts():
-        with open("accounts.json", "r") as f:
-            users = json.load(f)
+    def has_account(name):
+        """Checks if the name is in DB"""
+        query = f"SELECT `user` FROM `accounts` WHERE `user` = '{name}'"
 
-        for k, v in users.items():
-            users[k] = 0
-
-        with open("accounts.json", mode="w") as f:
-            json.dump(users, f)
+        try:
+            with connect(
+                    host=host,
+                    user=user,
+                    password=password,
+                    database=database
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query)
+                    results = cursor.fetchall()
+                    if len(results) > 0:
+                        return True
+                    else:
+                        return False
+                    connection.commit()
+        except Error as e:
+            print(e)
 
     @staticmethod
     def add_money(name, amount):
-        with open("accounts.json", "r") as f:
-            users = json.load(f)
+        """Adds money to an account"""
+        if not Bank.has_account(name):
+            Bank.open_account(name)
 
-        if name in users:
-            users[name] += int(amount)
-            with open("accounts.json", "w") as f:
-                json.dump(users, f)
-        else:
-            users[name] = 0
-            users[name] += int(amount)
-            with open("accounts.json", "w") as f:
-                json.dump(users, f)
+        add_query = f"UPDATE `accounts` SET `balance` = balance + {amount} WHERE `user` = '{name}'"
+
+        try:
+            with connect(
+                    host=host,
+                    user=user,
+                    password=password,
+                    database=database
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(add_query)
+                    connection.commit()
+                    return f"${amount} Added to {name}'s account."
+        except Error as e:
+            print(e)
 
     @staticmethod
     def sub_money(name, amount):
-        with open("accounts.json", "r") as f:
-            users = json.load(f)
+        """Subtracts money from an account"""
+        if not Bank.has_account(name):
+            Bank.open_account(name)
 
-        if name in users:
-            return False
-        else:
-            users[name] = 0
+        add_query = f"UPDATE `accounts` SET `balance` = balance - {amount} WHERE `user` = '{name}'"
 
-        users[name] -= amount
-        with open("accounts.json", "w") as f:
-            json.dump(users, f)
+        try:
+            with connect(
+                    host=host,
+                    user=user,
+                    password=password,
+                    database=database
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(add_query)
+                    connection.commit()
+                    return f"${amount} Removed from {user}'s account."
+        except Error as e:
+            print(e)
 
-    async def get_account_data(self):
-        with open("accounts.json", "r") as f:
-            users = json.load(f)
-        return users
+    @staticmethod
+    def open_account(name):
+        """Creates an account for a user"""
+        insert_query = f"INSERT INTO `accounts` (user, balance) VALUES ('{name}', '10.00')"
 
-    async def open_account(self, user):
-        users = await self.get_account_data()
-        print(users)
-        if str(user.name) in users:
-            return False
-        else:
-            users[str(user.name)] = 0
-        with open("accounts.json", "w") as f:
-            json.dump(users, f)
-        return True
+        try:
+            with connect(
+                    host=host,
+                    user=user,
+                    password=password,
+                    database=database
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(insert_query)
+                    connection.commit()
+        except Error as e:
+            print(e)
 
-    @commands.command(aliases=['b', 'bal'], description='Checks your bank account')
+    @commands.command(aliases=['b', 'bal'])
     async def balance(self, ctx):
-        users = await self.get_account_data()
-        await self.open_account(ctx.author)
-        name = ctx.author.name
-        bal = users[name]
-        await ctx.send(f'{name} your balance is {bal}')
+        """See how much money you have"""
+        if not Bank.has_account(ctx.author.name):
+            self.open_account(ctx.author.name)
 
-    # @commands.command()
-    # async def test(self,ctx,amount):
-    #     await Bank.add_money(ctx.author.name, amount)
-    #     await self.balance(ctx)
+        query = f"SELECT `balance` FROM `accounts` WHERE `user` = '{ctx.author.name}'"
+
+        try:
+            with connect(
+                    host=host,
+                    user=user,
+                    password=password,
+                    database=database
+            ) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query)
+                    result = cursor.fetchall()[0][0]
+                    connection.commit()
+        except Error as e:
+            print(e)
+        await ctx.send(f"***{ctx.author.name} Account***\nBalance: ${result}")
+
+    @commands.command()
+    @commands.has_any_role("Administrator")
+    async def add(self, ctx, amount):
+        """Administrators can add money to an account"""
+        Bank.add_money(ctx.author.name, amount)
+        await ctx.send(f"Added ${amount} from {ctx.author.name}'s account.")
+
+    @commands.command()
+    @commands.has_any_role("Administrator")
+    async def sub(self, ctx, amount):
+        """Administrators can remove money from an account"""
+        Bank.sub_money(ctx.author.name, amount)
+        await ctx.send(f"Removed ${amount} from {ctx.author.name}'s account.")
 
     # @commands.command(description='A place to spend your money!',aliases=['s'])
     # async def shop(self,ctx):
     #     '''View commands to buy things'''
     #     pass
-
 
 def setup(bot):
     bot.add_cog(Bank(bot))
