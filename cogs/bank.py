@@ -8,6 +8,23 @@ password = os.getenv()
 database = os.getenv()
 
 
+def query_db(query):
+    try:
+        with connect(
+                host=host,
+                user=user,
+                password=password,
+                database=database
+        ) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                result = cursor.fetchall()
+                connection.commit()
+                return result
+    except Error as e:
+        print(e)
+
+
 class Bank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -16,24 +33,11 @@ class Bank(commands.Cog):
     def has_account(name):
         """Checks if the name is in DB"""
         query = f"SELECT `user` FROM `accounts` WHERE `user` = '{name}'"
-
-        try:
-            with connect(
-                    host=host,
-                    user=user,
-                    password=password,
-                    database=database
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(query)
-                    results = cursor.fetchall()
-                    if len(results) > 0:
-                        return True
-                    else:
-                        return False
-                    connection.commit()
-        except Error as e:
-            print(e)
+        results = query_db(query)
+        if results:
+            return True
+        else:
+            return False
 
     @staticmethod
     def add_money(name, amount):
@@ -42,20 +46,8 @@ class Bank(commands.Cog):
             Bank.open_account(name)
 
         add_query = f"UPDATE `accounts` SET `balance` = balance + {amount} WHERE `user` = '{name}'"
-
-        try:
-            with connect(
-                    host=host,
-                    user=user,
-                    password=password,
-                    database=database
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(add_query)
-                    connection.commit()
-                    return f"${amount} Added to {name}'s account."
-        except Error as e:
-            print(e)
+        query_db(add_query)
+        return f"${amount} Added to {name}'s account."
 
     @staticmethod
     def sub_money(name, amount):
@@ -63,39 +55,15 @@ class Bank(commands.Cog):
         if not Bank.has_account(name):
             Bank.open_account(name)
 
-        add_query = f"UPDATE `accounts` SET `balance` = balance - {amount} WHERE `user` = '{name}'"
-
-        try:
-            with connect(
-                    host=host,
-                    user=user,
-                    password=password,
-                    database=database
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(add_query)
-                    connection.commit()
-                    return f"${amount} Removed from {user}'s account."
-        except Error as e:
-            print(e)
+        sub_query = f"UPDATE `accounts` SET `balance` = balance - {amount} WHERE `user` = '{name}'"
+        query_db(sub_query)
+        return f"${amount} Removed from {user}'s account."
 
     @staticmethod
     def open_account(name):
         """Creates an account for a user"""
         insert_query = f"INSERT INTO `accounts` (user, balance) VALUES ('{name}', '10.00')"
-
-        try:
-            with connect(
-                    host=host,
-                    user=user,
-                    password=password,
-                    database=database
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(insert_query)
-                    connection.commit()
-        except Error as e:
-            print(e)
+        query_db(insert_query)
 
     @commands.command(aliases=['b', 'bal'])
     async def balance(self, ctx):
@@ -104,21 +72,8 @@ class Bank(commands.Cog):
             self.open_account(ctx.author.name)
 
         query = f"SELECT `balance` FROM `accounts` WHERE `user` = '{ctx.author.name}'"
-
-        try:
-            with connect(
-                    host=host,
-                    user=user,
-                    password=password,
-                    database=database
-            ) as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(query)
-                    result = cursor.fetchall()[0][0]
-                    connection.commit()
-        except Error as e:
-            print(e)
-        await ctx.send(f"***{ctx.author.name} Account***\nBalance: ${result}")
+        results = query_db(query)
+        await ctx.send(f"***{ctx.author.name} Account***\nBalance: ${results[0][0]}")
 
     @commands.command()
     @commands.has_any_role("Administrator")

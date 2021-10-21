@@ -5,7 +5,6 @@ from .bank import Bank
 import random
 
 emoji_list = [':one:', ':two:', ':three:', ':four:', ':five:', ':six:', ':seven:', ':eight:', ':nine:']
-question_list = ['I cant believe you like _____ too, we should hang out.']
 
 
 def data_compile():
@@ -143,7 +142,6 @@ class Vote:
 
 class Player():
     """Player object used to hold players info"""
-
     def __init__(self, name, id, member):
         self.name = name
         self.response = {}
