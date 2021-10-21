@@ -81,7 +81,7 @@ class OdinsGame(commands.Cog):
 
     async def wait_for_results(self):
         '''Delays game for voting, counts reactions, and calls decide_winner(react_info)'''
-        await sleep(5)
+        await sleep(20)
         await self.game.channel.send('Voting concludes in 5 seconds')
         await sleep(5)
         cached_msg = discord.utils.get(self.bot.cached_messages, id=self.game.response_message.id)
@@ -99,8 +99,8 @@ class OdinsGame(commands.Cog):
             else:
                 continue
         await self.game.channel.send(
-            f'{self.game.winner} Has Won the Round!\n Awarded {len(self.game.players) * 10} dollars')
-        Bank.add_money(self.game.winner, len(self.game.players) * 10)
+            f'{self.game.winner} Has Won the Round!\n Awarded ${len(self.game.players) * 10}.')
+        Bank.add_money(self.game.winner, len(self.game.players) * 20)
         await self.again(self.game.channel)
 
     async def again(self, channel):

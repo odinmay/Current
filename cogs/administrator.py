@@ -3,7 +3,15 @@ from datetime import datetime
 import discord
 import asyncio
 import math
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+file_handler = logging.FileHandler('bot.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 class Administration(commands.Cog):
     def __init__(self, bot):
@@ -15,37 +23,32 @@ class Administration(commands.Cog):
         await ctx.send(f'Currents current ping is {round(self.bot.latency * 1000)}ms')
 
     @commands.command()
+    @commands.has_permissions("Administrator")
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         """Kicks target member"""
-        if ctx.author.guild_permissions.kick_members:
-            await member.kick(reason=reason)
-            ctx.send(f'{ctx.author} has kicked {member}')
-        else:
-            await ctx.send(f'{ctx.author} does not have permission to kick members.')
+        await member.kick(reason=reason)
+        ctx.send(f'{ctx.author} has kicked {member}')
+
 
     @commands.command()
+    @commands.has_permissions("Administrator")
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         """Bans target member"""
-        if ctx.author.guild_permissions.ban_members:
-            await member.ban(reason=reason)
-            await ctx.send(f'{member.mention} has been banned.')
-        else:
-            await ctx.send(f'{ctx.author} does not have permission to ban members.')
+        await member.ban(reason=reason)
+        await ctx.send(f'{member.mention} has been banned.')
 
     @commands.command()
+    @commands.has_permissions("Administrator")
     async def unban(self, ctx, *, member):
         """Unbans target member"""
-        if ctx.author.guild_permissions.ban_members:
-            banned_users = await ctx.guild.bans()
-            member_name, member_discriminator = member.split('#')
-            for ban_entry in banned_users:
-                user = ban_entry.user
-                if (user.name, user.discriminator) == (member_name, member_discriminator):
-                    await ctx.guild.unban(user)
-                    await ctx.send(f'{ctx.author} Unbanned {user.mention}')
-                    return
-        else:
-            await ctx.send(f'{ctx.author} does not have permission to unban members.')
+        banned_users = await ctx.guild.bans()
+        member_name, member_discriminator = member.split('#')
+        for ban_entry in banned_users:
+            user = ban_entry.user
+            if (user.name, user.discriminator) == (member_name, member_discriminator):
+                await ctx.guild.unban(user)
+                await ctx.send(f'{ctx.author} Unbanned {user.mention}')
+                return
 
     @commands.command()
     async def list_channels(self, ctx):

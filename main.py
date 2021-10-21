@@ -6,7 +6,7 @@ import os
 # Setting up logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+formatter = logging.Formatter('%(name)s:%(asctime)s:%(levelname)s:%(message)s')
 file_handler = logging.FileHandler('bot.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
@@ -24,7 +24,8 @@ extensions = ['cogs.administrator',
               'cogs.voicebot',
               'cogs.odinsgame',
               'cogs.bank',
-              'cogs.games',]
+              'cogs.games',
+              'cogs.aku']
 
 
 def load_extensions(ext_list: list):

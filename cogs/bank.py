@@ -1,12 +1,20 @@
 import os
 from discord.ext import commands
 from mysql.connector import connect, Error
+import logging
 
 host = os.getenv()
 user = os.getenv()
 password = os.getenv()
 database = os.getenv()
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(name)s:%(asctime)s:%(levelname)s:%(message)s')
+file_handler = logging.FileHandler('bot.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 def query_db(query):
     try:
@@ -19,9 +27,12 @@ def query_db(query):
             with connection.cursor() as cursor:
                 cursor.execute(query)
                 result = cursor.fetchall()
+                logger.info(f"Query performed: {query}.")
+                logger.info(f"Query results: {result}.")
                 connection.commit()
                 return result
     except Error as e:
+        logger.warning(f"Error with mySQL query. {e}")
         print(e)
 
 
@@ -80,6 +91,7 @@ class Bank(commands.Cog):
     async def add(self, ctx, amount):
         """Administrators can add money to an account"""
         Bank.add_money(ctx.author.name, amount)
+        logger.info(f"User {ctx.author.name} has added ${amount} to their account.")
         await ctx.send(f"Added ${amount} from {ctx.author.name}'s account.")
 
     @commands.command()
@@ -87,6 +99,7 @@ class Bank(commands.Cog):
     async def sub(self, ctx, amount):
         """Administrators can remove money from an account"""
         Bank.sub_money(ctx.author.name, amount)
+        logger.info(f"User {ctx.author.name} has removed ${amount} from their account.")
         await ctx.send(f"Removed ${amount} from {ctx.author.name}'s account.")
 
     # @commands.command(description='A place to spend your money!',aliases=['s'])

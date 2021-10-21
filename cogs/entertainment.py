@@ -1,9 +1,18 @@
 from discord.ext import commands
 from discord import Spotify
 import discord
+import logging
 import random
 import requests
 import json
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(name)s:%(asctime)s:%(levelname)s:%(message)s')
+file_handler = logging.FileHandler('bot.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 magicians_images = ['https://thumbs.gfycat.com/PalatableBeautifulInganue.webp',
                     'https://thumbs.gfycat.com/FaroffDamagedIzuthrush.webp',
@@ -198,11 +207,7 @@ def pull_movie(movie):
                              color=0x00C7FF
                              )
     embedMsg.set_image(url=response['poster'])
-
-
     return embedMsg
-    # return '\n'.join(
-    #     [response['poster'], , 'Rating ' + response['rating'], response['trailer']['link']])
 
 
 class Entertainment(commands.Cog):
