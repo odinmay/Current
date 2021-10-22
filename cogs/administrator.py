@@ -23,22 +23,21 @@ class Administration(commands.Cog):
         await ctx.send(f'Currents current ping is {round(self.bot.latency * 1000)}ms')
 
     @commands.command()
-    @commands.has_permissions("Administrator")
+    @commands.has_permissions()
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         """Kicks target member"""
         await member.kick(reason=reason)
         ctx.send(f'{ctx.author} has kicked {member}')
 
-
     @commands.command()
-    @commands.has_permissions("Administrator")
+    @commands.has_permissions()
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         """Bans target member"""
         await member.ban(reason=reason)
         await ctx.send(f'{member.mention} has been banned.')
 
     @commands.command()
-    @commands.has_permissions("Administrator")
+    @commands.has_permissions()
     async def unban(self, ctx, *, member):
         """Unbans target member"""
         banned_users = await ctx.guild.bans()
@@ -76,22 +75,8 @@ class Administration(commands.Cog):
         """Prints the date the Guild was created at"""
         await ctx.send(f'{ctx.guild}\'s Birthday is : {ctx.guild.created_at.strftime("%B %d, %Y : %I %M %p")}')
 
-    @commands.command()
-    async def backup_messages(self, ctx):
-        """Creates a backup of all of the messages on the server"""
-        all_messages = []
-        for channel in ctx.guild.text_channels:
-            print(f'Working on Channel: {channel}')
-            messages = await channel.history(limit=150000).flatten()
-            for message in messages:
-                all_messages.append(f'Channel: {channel} - {message.author} : {message.content} | {message.created_at.strftime("%B %d, %Y : %I %M %p")}')
-        print('Opening File')
 
-        with open(f'Message_backup_{datetime.today().strftime("%Y-%m-%d")}.txt', 'w') as file:
-            for message in all_messages:
-                file.write(message + '\n')
-
-    #Credit to Diggy. https://stackoverflow.com/questions/61786264/discord-py-send-long-messages
+    # Credit to Diggy. https://stackoverflow.com/questions/61786264/discord-py-send-long-messages
     @commands.command()
     async def members(self, ctx):
         """Prints all of the members on the server"""
@@ -141,13 +126,15 @@ class Administration(commands.Cog):
         embedMsg = discord.Embed(title=f"{ctx.guild}'s Loyal Boosters!", description="Thank you!", color=0xFF00FF)
 
         for member in ctx.guild.premium_subscribers:
-            embedMsg.add_field(name=f"{member.display_name}", value=f"Boosting Since - {member.premium_since.strftime('%B %d, %Y')}.", inline=False)
+            embedMsg.add_field(name=f"{member.display_name}",
+                               value=f"Boosting Since - {member.premium_since.strftime('%B %d, %Y')}.", inline=False)
         await ctx.send(embed=embedMsg)
 
     @commands.command()
     async def member_count(self, ctx):
         """Prints the # of members"""
         await ctx.send(f'There are {ctx.guild.member_count} members currently in {ctx.guild}')
+
 
 def setup(bot):
     bot.add_cog(Administration(bot))
