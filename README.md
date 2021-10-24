@@ -18,7 +18,7 @@
 
 
 
-#Administrator Cog Commands
+# Administrator Cog Commands
 - **.ping**: Prints the bots ping in ms
 - **.kick**: Kicks target member
 - **.ban**: Bans target member
@@ -30,7 +30,7 @@
 - **.boosters**: Print the server boosters of the guild and date they started boosting
 - **.member_count**: Prints the # of members
 
-#Entertainment Cog Commands
+# Entertainment Cog Commands
 - **.8ball**: Ask it a question!
 - **.flip**: Whats the most you ever lost in a coin toss?
 - **.joke**: Tells a joke
@@ -43,24 +43,24 @@
 - **.spotify**: Shares what you are listening to on Spotify
 - **.deflect**: Displays a random deflect gif
 
-#Voicebot Cog Commands
+# Voicebot Cog Commands
 - **.stream**: Streams a url / search from YouTube Soundcloud etc.
 - **.volume**: Sets the bot volume percentage
 - **.join**: Have the bot join your voice channel
 - **.stop**: Cancels audio and disconnects bot from voice
 
-#Bank Cog Commands
+# Bank Cog Commands
 - **.balance**: Prints the balance in the users account
 - **.add**: Adds money to users account
 - **.sub**: Removes money from users account
 
-#Games Cog Commands
+# Games Cog Commands
 - **.guess**: Guess a number 1-100, win money! (Internal Economy)
 - **.beg**: Beg for a small amount of cash to be deposited to your account
 - **.bet**: Simple game: 1% chance for 8x, 30% chance for 2x payout
 - **.steal**: Attempt to steal $150 from a members account
 
-#Cards Against Discord Cog Commands
+# Cards Against Discord Cog Commands
 - **.game_join**: Prints the bots ping in ms
 - **.game_start**: Prints the bots ping in ms
 - **.vote**: Prints the bots ping in ms
