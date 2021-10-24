@@ -17,7 +17,7 @@ file_handler = logging.FileHandler('bot.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-# helper Functions #
+# Helper Functions #
 
 def translate_sindarin(text):
     """GET Api data and return it"""
@@ -113,7 +113,7 @@ def pull_movie(movie):
 
 
 class Entertainment(commands.Cog):
-    """The Entertainment Cog Class"""
+    """The Entertainment Cog Class, commands live here."""
     def __init__(self, bot):
         self.bot = bot
         self.strikes = 0

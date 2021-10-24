@@ -22,7 +22,7 @@ def data_compile():
     return master_list
 
 
-class OdinsGame(commands.Cog):
+class CardsAgainstDiscord(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game = Game()
@@ -114,7 +114,7 @@ class OdinsGame(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(OdinsGame(bot))
+    bot.add_cog(CardsAgainstDiscord(bot))
 
 
 class Game:

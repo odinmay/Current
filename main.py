@@ -32,7 +32,7 @@ DISCORD_SECRET = os.getenv("DISCORD_SECRET")
 extensions = ['cogs.administrator',
               'cogs.entertainment',
               'cogs.voicebot',
-              'cogs.odinsgame',
+              'cogs.cardsagainstdiscord',
               'cogs.bank',
               'cogs.games',
               'cogs.aku']
