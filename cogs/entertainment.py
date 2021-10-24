@@ -1,10 +1,13 @@
+"""The entertainment Cog, games, media, and memes live here."""
+
+import logging
+import random
+import json
+import requests
 from discord.ext import commands
 from discord import Spotify
 import discord
-import logging
-import random
-import requests
-import json
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -14,118 +17,10 @@ file_handler = logging.FileHandler('bot.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-magicians_images = ['https://thumbs.gfycat.com/PalatableBeautifulInganue.webp',
-                    'https://thumbs.gfycat.com/FaroffDamagedIzuthrush.webp',
-                    'https://thumbs.gfycat.com/ComplexMeatyItaliangreyhound.webp',
-                    'https://thumbs.gfycat.com/CookedVapidBluefish.webp',
-                    'https://thumbs.gfycat.com/SpectacularCostlyCricket.webp',
-                    'https://thumbs.gfycat.com/BlandWeakAbalone.webp',
-                    'https://thumbs.gfycat.com/OrangeQuarterlyFinwhale.webp',
-                    'https://thumbs.gfycat.com/AnxiousVeneratedCattle.webp',
-                    'https://thumbs.gfycat.com/DeadlyInbornAtlasmoth.webp',
-                    'https://thumbs.gfycat.com/RemoteAnimatedDunlin.webp',
-                    'https://thumbs.gfycat.com/GeneralFabulousAtlanticblackgoby.webp',
-                    'https://thumbs.gfycat.com/ShrillHilariousBooby.webp',
-                    'https://thumbs.gfycat.com/ShowyAdolescentGrosbeak.webp',
-                    'https://thumbs.gfycat.com/VengefulThinHusky.webp',
-                    'https://thumbs.gfycat.com/LegitimateInexperiencedFruitbat.webp',
-                    'https://thumbs.gfycat.com/DownrightIdleKakarikis.webp',
-                    'https://thumbs.gfycat.com/ContentGentleIchidna.webp',
-                    'https://thumbs.gfycat.com/FakeUglyCricket.webp',
-                    'https://thumbs.gfycat.com/ThatDeadAnole.webp',
-                    'https://thumbs.gfycat.com/HotLastInchworm.webp',
-                    'https://thumbs.gfycat.com/DisastrousPinkBlacklemur.webp',
-                    'https://thumbs.gfycat.com/ScarceGleamingHarpseal.webp',
-                    'https://thumbs.gfycat.com/VengefulAcidicAdmiralbutterfly.webp',
-                    'https://thumbs.gfycat.com/JoyousWeirdKomododragon.webp',
-                    'https://thumbs.gfycat.com/ShyWetCuttlefish.webp',
-                    'https://thumbs.gfycat.com/WickedSlowAmurminnow.webp',
-                    'https://thumbs.gfycat.com/OddballPowerfulAnnelida.webp',
-                    'https://thumbs.gfycat.com/RichOpulentHagfish.webp',
-                    'https://thumbs.gfycat.com/CraftyImpureCrane.webp',
-                    'https://thumbs.gfycat.com/NextLivelyAuklet.webp',
-                    'https://thumbs.gfycat.com/PoisedIllustriousCrossbill.webp',
-                    'https://thumbs.gfycat.com/SereneDefinitiveGosling.webp',
-                    'https://thumbs.gfycat.com/NiftySardonicHairstreak.webp',
-                    'https://thumbs.gfycat.com/SizzlingInfiniteKodiakbear.webp',
-                    'https://thumbs.gfycat.com/PessimisticGrandioseKoalabear.webp',
-                    'https://thumbs.gfycat.com/CelebratedCleanCassowary.webp',
-                    'https://thumbs.gfycat.com/HotElderlyGrassspider.webp',
-                    'https://thumbs.gfycat.com/HotElderlyGrassspider.webp',
-                    'https://thumbs.gfycat.com/RedPlaintiveBlackrhino.webp',
-                    'https://thumbs.gfycat.com/SplendidUnselfishFerret.webp',
-                    'https://thumbs.gfycat.com/RightBetterFireant.webp',
-                    'https://thumbs.gfycat.com/YoungBraveHind.webp',
-                    'https://thumbs.gfycat.com/CooperativeTallJellyfish.webp',
-                    'https://thumbs.gfycat.com/SardonicNearHerculesbeetle.webp',
-                    'https://thumbs.gfycat.com/NegligibleEmbellishedDaddylonglegs.webp',
-                    'https://thumbs.gfycat.com/SnappyGlassDachshund.webp',
-                    'https://thumbs.gfycat.com/UnluckyIdleArchaeocete.webp',
-                    'https://thumbs.gfycat.com/DelectableOldBadger.webp',
-                    'https://gfycat.com/hugeyellowishblackrussianterrier-the-magicians-tick-pickwick-rizwan-manji-amused',
-                    'https://gfycat.com/bouncyethicalirishredandwhitesetter-the-magicians-tick-pickwick-rizwan-manji-exit',
-                    'https://gfycat.com/hideousenchantedherculesbeetle-the-magicians-hale-appleman-eliot-waugh-peek',
-                    'https://gfycat.com/apprehensiveshinycaiman-the-magicians-tick-pickwick-rizwan-manji',
-                    'https://gfycat.com/altruisticreflectingamericanredsquirrel-the-magicians-penny-adiyodi-arjun-gupta-shocked',
-                    'https://gfycat.com/rarebriskivorygull-kady-orloffdiaz-the-magicians-jade-tailor',
-                    'https://gfycat.com/mintyimpureborer-olivia-taylor-dudley-the-magicians-alice-quinn',
-                    'https://gfycat.com/totalcoolabalone-the-magicians-tick-pickwick-rizwan-manji-yikes',
-                    'https://gfycat.com/excitablealarmeddogfish-the-magicians-tick-pickwick-but-im-a-man',
-                    'https://gfycat.com/faintregularaxolotl-right-in-the-pooper-the-magicians-margo-hanson',
-                    'https://gfycat.com/thismadeupiraniangroundjay-tick-pickwick-the-magicians-rizwan-manji',
-                    'https://gfycat.com/joyfulinnocentbluefish-the-magicians-penny-adiyodi-arjun-gupta',
-                    'https://gfycat.com/shamefulantiquecoati-the-magicians-penny-adiyodi-arjun-gupta-idiot',
-                    'https://gfycat.com/acidicphysicaleasternglasslizard-i-am-so-screwed-the-magicians-penny-adiyodi',
-                    'https://gfycat.com/homelyevergreenheron-lets-go-get-a-drink-the-magicians-julia-wicker',
-                    'https://gfycat.com/fluffyembarrassedankole-the-magicians-penny-adiyodi-arjun-gupta-me-too',
-                    'https://gfycat.com/willingconcretebasilisk-thought-we-were-going-to-bang-the-magicians',
-                    'https://gfycat.com/fantasticoldfashionedauk-the-magicians-penny-adiyodi-arjun-gupta-shocked',
-                    'https://gfycat.com/onlydelightfuldunlin-the-magicians-penny-adiyodi-arjun-gupta-come-on',
-                    'https://gfycat.com/negativelatearieltoucan-harvey-guillen-the-magicians-distraught',
-                    'https://gfycat.com/quickidioticbonobo-im-a-person-of-questionable-ethics',
-                    'https://gfycat.com/shadowyenormousflamingo-the-magicians-jason-ralph-quentin',
-                    'https://gfycat.com/adorablejoyouscats-the-magicians-jason-ralph-frustrated-no-no-no',
-                    'https://gfycat.com/pinkgreatasianporcupine-youll-feel-better-if-you-just-drink-the-wine',
-                    'https://gfycat.com/rewardingthirdcapybara-the-magicians-rick-worthy-henry-fogg',
-                    'https://gfycat.com/adoreddisgustingbubblefish-kady-orloff-diaz-the-magicians-jade-tailor',
-                    'https://gfycat.com/pepperyagedhorse-beauty',
-                    'https://gfycat.com/rectangularjovialamethystinepython-kady-orloff-diaz-the-magicians-jade-tailor',
-                    'https://gfycat.com/naturalimportantearwig-its-a-little-funny-the-magicians-penny-adiyodi',
-                    'https://gfycat.com/quarterlydefinitehoneyeater-the-magicians-tick-pickwick-rizwan-manji',
-                    'https://gfycat.com/tightbravehind-the-magicians-hale-appleman-lets-do-this-im-in',
-                    'https://gfycat.com/welcomecheerfulflamingo-beauty',
-                    'https://gfycat.com/decisivewellwornamericancrayfish-youre-so-mysterious-the-magicians',
-                    'https://gfycat.com/obedientknobbyhorsechestnutleafminer-the-magicians-tick-pickwick-i-shall-not',
-                    'https://gfycat.com/secondhandidiotickingsnake-now-is-the-time-the-time-is-now-tick-pickwick',
-                    'https://gfycat.com/freshdistortedamurminnow-trevor-einhorn-the-magicians-josh-hoberman-420',
-                    'https://gfycat.com/tinyeachabyssiniangroundhornbill-the-magicians-tick-pickwick-rizwan-manji-shrug',
-                    'https://gfycat.com/shorttermhelplessjunebug-beauty',
-                    'https://gfycat.com/mealyadorableamericanpainthorse-the-magicians-tick-pickwick-rizwan-manji',
-                    'https://gfycat.com/watchfulconcretegalapagoshawk-beauty',
-                    'https://gfycat.com/lightordinaryape-marina-andrieski-the-magicians-kacey-rohl',
-                    'https://gfycat.com/madeuphatefulgrackle-weve-all-peed-in-things-we-regret-bacchus',
-                    'https://gfycat.com/glassunrealisticfennecfox-this-is-bullshit-the-magicians-summer-bishil',
-                    'https://gfycat.com/defenselessorganicfulmar-that-sounds-on-brand-sounds-about-right',
-                    'https://gfycat.com/majesticidealisticbaldeagle-beauty',
-                    'https://gfycat.com/raredenseantbear-self-awareness-the-magicians-hale-appleman',
-                    'https://gfycat.com/klutzyagedamericanbulldog-trevor-einhorn-the-magicians-josh-hoberman-smug',
-                    'https://gfycat.com/powerlessthirdhyracotherium-quentin-coldwater-the-magicians-jason-ralph',
-                    'https://gfycat.com/madminoramphibian-sounds-like-a-personal-problem-the-magicians',
-                    'https://gfycat.com/seconddetailedhamster-the-magicians-banana-phone-rick-worthy',
-                    'https://gfycat.com/sphericalwidedwarfrabbit-throws-hands-up-in-the-air-quentin-coldwater',
-                    'https://gfycat.com/thunderousimpolitehatchetfish-go-make-me-a-drink-the-magicians-summer-bishil',
-                    'https://gfycat.com/ajarrespectfulindianpalmsquirrel-the-magicians-penny-adiyodi-arjun-gupta-wow-no',
-                    'https://gfycat.com/slipperyfrightenedcivet-dont-screw-it-up-the-magicians-madisen-beaty',
-                    'https://gfycat.com/apprehensivecourageousalbino-the-magicians-summer-bishil-margo-hanson-yikes',
-                    'https://gfycat.com/farflungfinishedcolt-that-is-very-fuck-thats-messed-up-thats-fucked',
-                    'https://gfycat.com/zigzagrecenthaddock-the-magicians-summer-bishil-margo-hanson',
-                    'https://gfycat.com/hotwarmheartedcrow-now-thats-the-kind-of-man-i-need-margo-hanson',
-                    'https://gfycat.com/bigrepulsiveacornweevil-the-magicians-summer-bishil-margo-hanson-urgent']
-
-
 # helper Functions #
 
 def translate_sindarin(text):
+    """GET Api data and return it"""
     url = 'https://api.funtranslations.com/translate/sindarin.json'
     querystring = {'text': text}
     response = requests.get(url, params=querystring)
@@ -136,6 +31,7 @@ def translate_sindarin(text):
 
 
 def pull_joke():
+    """GET Api data and return it"""
     url = "https://joke3.p.rapidapi.com/v1/joke"
     headers = {
         'x-rapidapi-host': "joke3.p.rapidapi.com",
@@ -146,11 +42,13 @@ def pull_joke():
 
 
 def pull_chucknorris():
+    """GET Api data and return it"""
     req = requests.get('https://api.chucknorris.io/jokes/random')
     return req.json()['value']
 
 
 def scryfall(card_name):
+    """GET Api data and return it"""
     url = 'https://api.scryfall.com/cards/search'
     querystring = {'q': card_name}
     response = requests.request('GET', url, params=querystring)
@@ -161,6 +59,7 @@ def scryfall(card_name):
 
 
 def scryfall_art(card_name):
+    """GET Api data and return it"""
     url = 'https://api.scryfall.com/cards/search'
     querystring = {'q': card_name}
     response = requests.request('GET', url, params=querystring)
@@ -171,6 +70,7 @@ def scryfall_art(card_name):
 
 
 def scryfall_price(card_name):
+    """GET Api data and return it"""
     url = 'https://api.scryfall.com/cards/search'
     querystring = {'q': card_name}
     response = requests.request('GET', url, params=querystring)
@@ -184,6 +84,7 @@ def scryfall_price(card_name):
 
 
 def pull_mtgio_card(card_name):
+    """GET Api data and return it"""
     url = 'https://api.magicthegathering.io/v1/cards'
     querystring = {'name': card_name}
     response = requests.request('GET', url, params=querystring)
@@ -194,6 +95,7 @@ def pull_mtgio_card(card_name):
 
 
 def pull_movie(movie):
+    """GET Api data, create embed message and return it"""
     url = f"https://imdb-internet-movie-database-unofficial.p.rapidapi.com/film/{movie}"
     headers = {
         'x-rapidapi-host': "imdb-internet-movie-database-unofficial.p.rapidapi.com",
@@ -201,16 +103,17 @@ def pull_movie(movie):
     }
     response = requests.request("GET", url, headers=headers).json()
 
-    embedMsg = discord.Embed(title=f"{str(movie).title()} | {response['rating']}/10",
+    embed_msg = discord.Embed(title=f"{str(movie).title()} | {response['rating']}/10",
                              description=f"{response['plot']}",
                              url=response['trailer']['link'],
                              color=0x00C7FF
                              )
-    embedMsg.set_image(url=response['poster'])
-    return embedMsg
+    embed_msg.set_image(url=response['poster'])
+    return embed_msg
 
 
 class Entertainment(commands.Cog):
+    """The Entertainment Cog Class"""
     def __init__(self, bot):
         self.bot = bot
         self.strikes = 0
@@ -260,7 +163,9 @@ class Entertainment(commands.Cog):
     @commands.command(aliases=['magic', 'magician'])
     async def magicians(self, ctx):
         """Displays random Magicians gif"""
-        await ctx.send(random.choice(magicians_images))
+        with open('magicians_urls.txt', 'r', encoding='utf-8') as file:
+            data = file.read()
+            await ctx.send(random.choice(data.split(',')))
 
     @commands.command()
     async def mtg(self, ctx, *, card):
@@ -292,7 +197,8 @@ class Entertainment(commands.Cog):
         for activity in user.activities:
             if isinstance(activity, Spotify):
                 await ctx.send(
-                    f"{user} is listening to {activity.title} by {activity.artist} {activity.album_cover_url}")
+                    f"{user} is listening to {activity.title} by"
+                    f" {activity.artist} {activity.album_cover_url}")
 
     @commands.command(aliases=['defelcts'])
     async def deflect(self, ctx) -> str:
@@ -308,4 +214,5 @@ class Entertainment(commands.Cog):
 
 
 def setup(bot):
+    """Called to initialize Cog to the bot"""
     bot.add_cog(Entertainment(bot))

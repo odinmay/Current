@@ -1,9 +1,11 @@
-from discord.ext import commands
-from datetime import datetime
-import discord
+"""Administrator commands cog which is loaded with the bot.
+ Useful for managing members and channels."""
+
 import asyncio
 import math
 import logging
+from discord.ext import commands
+import discord
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -14,6 +16,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 class Administration(commands.Cog):
+    """The Administrator Cog class"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -53,17 +56,21 @@ class Administration(commands.Cog):
     async def list_channels(self, ctx):
         """Pulls all of the guild channels and displays them in an Embed message"""
         # Create Embed object and set attrs
-        embedMsg = discord.Embed(title=f"{ctx.guild} Channels", description="Channels", color=0x00C7FF)
+        embed_msg = discord.Embed(
+            title=f"{ctx.guild} Channels",
+            description="Channels",
+            color=0x00C7FF,
+        )
 
         # Adds every channel as a field of the Embed object
         for channel in ctx.guild.channels:
-            embedMsg.add_field(
+            embed_msg.add_field(
                 name=f"{channel}",
                 value=f"Created at - {channel.created_at.strftime('%B %d, %Y : %I %M %p')}",
                 inline=False
             )
 
-        await ctx.send(embed=embedMsg)
+        await ctx.send(embed=embed_msg)
 
     @commands.command()
     async def emojis(self, ctx):
@@ -73,7 +80,8 @@ class Administration(commands.Cog):
     @commands.command()
     async def server_birthday(self, ctx):
         """Prints the date the Guild was created at"""
-        await ctx.send(f'{ctx.guild}\'s Birthday is : {ctx.guild.created_at.strftime("%B %d, %Y : %I %M %p")}')
+        await ctx.send(f'{ctx.guild}\'s Birthday is : '
+                       f'{ctx.guild.created_at.strftime("%B %d, %Y : %I %M %p")}')
 
 
     # Credit to Diggy. https://stackoverflow.com/questions/61786264/discord-py-send-long-messages
@@ -123,12 +131,17 @@ class Administration(commands.Cog):
         Print the server boosters of the guild
         and how long they have been boosting it.
         """
-        embedMsg = discord.Embed(title=f"{ctx.guild}'s Loyal Boosters!", description="Thank you!", color=0xFF00FF)
+        embed_msg = discord.Embed(
+            title=f"{ctx.guild}'s Loyal Boosters!",
+            description="Thank you!",
+            color=0xFF00FF
+        )
 
         for member in ctx.guild.premium_subscribers:
-            embedMsg.add_field(name=f"{member.display_name}",
-                               value=f"Boosting Since - {member.premium_since.strftime('%B %d, %Y')}.", inline=False)
-        await ctx.send(embed=embedMsg)
+            embed_msg.add_field(name=f"{member.display_name}",
+                               value=f"Boosting Since:{member.premium_since.strftime('%B %d, %Y')}.",
+                               inline=False)
+        await ctx.send(embed=embed_msg)
 
     @commands.command()
     async def member_count(self, ctx):
@@ -137,4 +150,5 @@ class Administration(commands.Cog):
 
 
 def setup(bot):
+    """Called to initialize the Cog with the bot"""
     bot.add_cog(Administration(bot))
