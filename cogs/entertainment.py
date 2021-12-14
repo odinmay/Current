@@ -7,6 +7,8 @@ import requests
 from discord.ext import commands
 from discord import Spotify
 import discord
+from .bank import query_db
+
 
 
 logger = logging.getLogger(__name__)
@@ -212,6 +214,42 @@ class Entertainment(commands.Cog):
              'https://media.tenor.com/images/0802de3dbf808ae7f1e13185f5bcb15a/tenor.gif',
              'https://media3.giphy.com/media/9dhFwjb4adknC/giphy.gif']))
 
+
+    @commands.command()
+    async def join_ss(self, ctx):
+        """Adds a player to the secret santa table if they aren't already in it"""
+        user = ctx.author.name
+        query = f"SELECT `name` FROM `secret_santas` WHERE `name` = '{user}'"
+        results = query_db(query)
+        if results:
+            await ctx.send(f"{user} has already joined Secret Santa.")
+        else:
+            query = f"INSERT INTO `secret_santas`(`name`, `id`) VALUES ('{ctx.author.name}', '{str(ctx.author.id)}')"
+            result = query_db(query)
+            await ctx.send(f"{user} has joined Secret Santa with id: {ctx.author.id}")
+
+    @commands.command()
+    async def draw_ss(self, ctx):
+        """Randomly pairs names from DB and dm's them their partner"""
+        query = f"SELECT * FROM `secret_santas`"
+        results = query_db(query)
+
+        name_list = [(result[0], result[1]) for result in results]
+        name_list_copy = name_list.copy()
+
+        for name in name_list:
+            partner = random.choice(name_list_copy)
+            while name == partner:
+                partner = random.choice(name_list_copy)
+
+            #SEND DM
+            member = await ctx.guild.fetch_member(int(name[1]))
+            channel = await member.create_dm()
+            await channel.send(f"Please buy a steam game for {partner[0]}. The price limit is $20 Please don't feel obligated to spend the whole $20. You can buy a $2 game. Merry Christmas!")
+            name_list_copy.remove(partner)
+
+        query = f"TRUNCATE TABLE `secret_santas`"
+        query_db(query)
 
 def setup(bot):
     """Called to initialize Cog to the bot"""
