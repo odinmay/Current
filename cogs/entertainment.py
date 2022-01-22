@@ -10,7 +10,6 @@ import discord
 from .bank import query_db
 
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -19,6 +18,21 @@ file_handler = logging.FileHandler('bot.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+
+
+# List for random god picker (Smite)
+gods = ['Achilles','Agni','Ah Muzen Cab','Ah Puch','Amaterasu','Anhur','Anubis','Ao Kuang','Aphrodite','Apollo','Arachne',
+ 'Ares','Artemis','Arthurian','Artio','Assassin','Athena','Atlas','Awilix','Baba Yaga','Babylonian','Bacchus','Bakasura',
+ 'Baron Samedi','Bastet','Bellona','Cabrakan','Camazotz','Celtic','Cerberus','Cernunnos','Chaac',"Chang'e",'Charybdis',
+ 'Chernobog','Chinese','Chiron','Chronos','Cliodhna','Cthulhu','Cu Chulainn','Cupid','Da Ji','Danzaburou','Discordia',
+ 'Egyptian','Erlang Shen','Eset','Fafnir','Fenrir','Freya','Ganesha','Geb','Gilgamesh','Great Old Ones','Greek','Guan Yu',
+ 'Guardian','Hachiman','Hades','He Bo','Heimdallr','Hel','Hera','Hercules','Hindu','Horus','Hou Yi','Hun Batz','Hunter',
+ 'Izanami','Janus','Japanese','Jing Wei','Jormungandr','Kali','Khepri','King Arthur','Kukulkan','Kumbhakarna','Kuzenbo',
+ 'Loki','Mage','Maya','Medusa','Mercury','Merlin','Morgan Le Fay','Mulan','Ne Zha','Neith','Nemesis','Nike','Norse',
+ 'Nox','Nu Wa','Odin','Olorun','Osiris','Pele','Persephone','Polynesian','Poseidon','Ra','Raijin','Rama','Ratatoskr',
+ 'Ravana','Roman','Scylla','Serqet','Set','Shiva','Skadi','Slavic','Sobek','Sol','Sun Wukong','Susano','Sylvanus','Terra',
+ 'Thanatos','The Morrigan','Thor','Thoth','Tiamat','Tsukuyomi','Tyr','Ullr','Vamana','Voodoo','Vulcan','Warrior',
+ 'Xbalanque','Xing Tian','Yemoja','Ymir','Yoruba','Zeus','Zhong Kui']
 # Helper Functions #
 
 def translate_sindarin(text):
@@ -214,6 +228,10 @@ class Entertainment(commands.Cog):
              'https://media.tenor.com/images/0802de3dbf808ae7f1e13185f5bcb15a/tenor.gif',
              'https://media3.giphy.com/media/9dhFwjb4adknC/giphy.gif']))
 
+    @commands.command(aliases=['godroll', 'Godroll'])
+    async def god(self, ctx) -> str:
+        """Displays a random deflect gif"""
+        await ctx.send(random.choice(gods))
 
     @commands.command()
     async def join_ss(self, ctx):
