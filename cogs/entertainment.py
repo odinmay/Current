@@ -1,5 +1,4 @@
 """The entertainment Cog, games, media, and memes live here."""
-
 import logging
 import random
 import json
@@ -9,7 +8,6 @@ from discord import Spotify
 import discord
 from .bank import query_db
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -18,22 +16,64 @@ file_handler = logging.FileHandler('bot.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-
-
 # List for random god picker (Smite)
-gods = ['Achilles','Agni','Ah Muzen Cab','Ah Puch','Amaterasu','Anhur','Anubis','Ao Kuang','Aphrodite','Apollo','Arachne',
- 'Ares','Artemis','Arthurian','Artio','Assassin','Athena','Atlas','Awilix','Baba Yaga','Babylonian','Bacchus','Bakasura',
- 'Baron Samedi','Bastet','Bellona','Cabrakan','Camazotz','Celtic','Cerberus','Cernunnos','Chaac',"Chang'e",'Charybdis',
- 'Chernobog','Chinese','Chiron','Chronos','Cliodhna','Cthulhu','Cu Chulainn','Cupid','Da Ji','Danzaburou','Discordia',
- 'Egyptian','Erlang Shen','Eset','Fafnir','Fenrir','Freya','Ganesha','Geb','Gilgamesh','Great Old Ones','Greek','Guan Yu',
- 'Guardian','Hachiman','Hades','He Bo','Heimdallr','Hel','Hera','Hercules','Hindu','Horus','Hou Yi','Hun Batz','Hunter',
- 'Izanami','Janus','Japanese','Jing Wei','Jormungandr','Kali','Khepri','King Arthur','Kukulkan','Kumbhakarna','Kuzenbo',
- 'Loki','Mage','Maya','Medusa','Mercury','Merlin','Morgan Le Fay','Mulan','Ne Zha','Neith','Nemesis','Nike','Norse',
- 'Nox','Nu Wa','Odin','Olorun','Osiris','Pele','Persephone','Polynesian','Poseidon','Ra','Raijin','Rama','Ratatoskr',
- 'Ravana','Roman','Scylla','Serqet','Set','Shiva','Skadi','Slavic','Sobek','Sol','Sun Wukong','Susano','Sylvanus','Terra',
- 'Thanatos','The Morrigan','Thor','Thoth','Tiamat','Tsukuyomi','Tyr','Ullr','Vamana','Voodoo','Vulcan','Warrior',
- 'Xbalanque','Xing Tian','Yemoja','Ymir','Yoruba','Zeus','Zhong Kui']
+gods = ['Achilles', 'Agni', 'Ah Muzen Cab', 'Ah Puch', 'Amaterasu', 'Anhur', 'Anubis', 'Ao Kuang', 'Aphrodite',
+        'Apollo', 'Arachne',
+        'Ares', 'Artemis', 'Arthurian', 'Artio', 'Assassin', 'Athena', 'Atlas', 'Awilix', 'Baba Yaga', 'Babylonian',
+        'Bacchus', 'Bakasura',
+        'Baron Samedi', 'Bastet', 'Bellona', 'Cabrakan', 'Camazotz', 'Celtic', 'Cerberus', 'Cernunnos', 'Chaac',
+        "Chang'e", 'Charybdis',
+        'Chernobog', 'Chinese', 'Chiron', 'Chronos', 'Cliodhna', 'Cthulhu', 'Cu Chulainn', 'Cupid', 'Da Ji',
+        'Danzaburou', 'Discordia',
+        'Egyptian', 'Erlang Shen', 'Eset', 'Fafnir', 'Fenrir', 'Freya', 'Ganesha', 'Geb', 'Gilgamesh', 'Great Old Ones',
+        'Greek', 'Guan Yu',
+        'Guardian', 'Hachiman', 'Hades', 'He Bo', 'Heimdallr', 'Hel', 'Hera', 'Hercules', 'Hindu', 'Horus', 'Hou Yi',
+        'Hun Batz', 'Hunter',
+        'Izanami', 'Janus', 'Japanese', 'Jing Wei', 'Jormungandr', 'Kali', 'Khepri', 'King Arthur', 'Kukulkan',
+        'Kumbhakarna', 'Kuzenbo',
+        'Loki', 'Mage', 'Maya', 'Medusa', 'Mercury', 'Merlin', 'Morgan Le Fay', 'Mulan', 'Ne Zha', 'Neith', 'Nemesis',
+        'Nike', 'Norse',
+        'Nox', 'Nu Wa', 'Odin', 'Olorun', 'Osiris', 'Pele', 'Persephone', 'Polynesian', 'Poseidon', 'Ra', 'Raijin',
+        'Rama', 'Ratatoskr',
+        'Ravana', 'Roman', 'Scylla', 'Serqet', 'Set', 'Shiva', 'Skadi', 'Slavic', 'Sobek', 'Sol', 'Sun Wukong',
+        'Susano', 'Sylvanus', 'Terra',
+        'Thanatos', 'The Morrigan', 'Thor', 'Thoth', 'Tiamat', 'Tsukuyomi', 'Tyr', 'Ullr', 'Vamana', 'Voodoo', 'Vulcan',
+        'Warrior',
+        'Xbalanque', 'Xing Tian', 'Yemoja', 'Ymir', 'Yoruba', 'Zeus', 'Zhong Kui']
+
+
 # Helper Functions #
+
+def pull_cocktail():
+    response = requests.get('https://www.thecocktaildb.com/api/json/v1/1/random.php')
+    data = json.loads(response.text)
+    ingredients = dict()
+
+    if response.status_code == 200:
+        try:
+            for i in range(1, 15):
+                try:
+                    ingredients.update({data['drinks'][0][f'strIngredient{i}']: data['drinks'][0][f'strMeasure{i}']})
+                except Exception as E:
+                    print(E)
+        except Exception as E:
+            print(E)
+
+
+        embed_msg = discord.Embed(title=data['drinks'][0]['strDrink'],
+                                  description=data['drinks'][0]['strInstructions'],
+                                  color=0x00C7FF
+                                  )
+        embed_msg.set_image(url=data['drinks'][0]['strDrinkThumb'])
+        for k,v in ingredients.items():
+            if k:
+                embed_msg.add_field(name=k, value=v)
+
+        return embed_msg
+
+    else:
+        print('failed http request')
+
 
 def translate_sindarin(text):
     """GET Api data and return it"""
@@ -120,16 +160,17 @@ def pull_movie(movie):
     response = requests.request("GET", url, headers=headers).json()
 
     embed_msg = discord.Embed(title=f"{str(movie).title()} | {response['rating']}/10",
-                             description=f"{response['plot']}",
-                             url=response['trailer']['link'],
-                             color=0x00C7FF
-                             )
+                              description=f"{response['plot']}",
+                              url=response['trailer']['link'],
+                              color=0x00C7FF
+                              )
     embed_msg.set_image(url=response['poster'])
     return embed_msg
 
 
 class Entertainment(commands.Cog):
     """The Entertainment Cog Class, commands live here."""
+
     def __init__(self, bot):
         self.bot = bot
         self.strikes = 0
@@ -169,6 +210,11 @@ class Entertainment(commands.Cog):
         """Tells a joke"""
         user = user or ctx.author
         await ctx.send(pull_joke())
+
+    @commands.command()
+    async def cocktail(self, ctx):
+        """Prints a random Cocktail recipe"""
+        await ctx.send(embed=pull_cocktail())
 
     @commands.command(aliases=['chuck norris', 'chucknorris', 'norris'])
     async def chuck(self, ctx, user: discord.Member = None):
@@ -260,14 +306,16 @@ class Entertainment(commands.Cog):
             while name == partner:
                 partner = random.choice(name_list_copy)
 
-            #SEND DM
+            # SEND DM
             member = await ctx.guild.fetch_member(int(name[1]))
             channel = await member.create_dm()
-            await channel.send(f"Please buy a steam game for {partner[0]}. The price limit is $20 Please don't feel obligated to spend the whole $20. You can buy a $2 game. Merry Christmas!")
+            await channel.send(
+                f"Please buy a steam game for {partner[0]}. The price limit is $20 Please don't feel obligated to spend the whole $20. You can buy a $2 game. Merry Christmas!")
             name_list_copy.remove(partner)
 
         query = f"TRUNCATE TABLE `secret_santas`"
         query_db(query)
+
 
 def setup(bot):
     """Called to initialize Cog to the bot"""
