@@ -42,6 +42,7 @@
 - **.sindarin**: Translates message into Elvish(Sindarin)
 - **.spotify**: Shares what you are listening to on Spotify
 - **.deflect**: Displays a random deflect gif
+- **.cocktail**: Displays a random cocktail recipe from CocktailDB
 
 # Voicebot Cog Commands
 - **.stream**: Streams a url / search from YouTube Soundcloud etc.
